@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #game-container {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-gap: 10px;
+      margin-top: 20px;
+    }
+
+    .card {
+      width: 100px;
+      height: 100px;
+      background-color: #3498db;
+      color: #fff;
+      font-size: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    #name-form {
+      margin-top: 20px;
+    }
+  </style>
+  <title>JODI MAKER</title>
+</head>
+<body>
+
+  <h1>JODI MAKER (3 IDIOTS VERSION)</h1>
+  <h2>Instructions</h2>
+  <p>Engineering kar rhe ho , 3 idiots ke dialogue to bohot relatable lagte honge</p>
+  <p>In this game there are 2 cards with the same 3 idiots reference, you have to match the both together.</p> 
+  <p>The objective is to match all the cards and complete the game.</p>
+
+  <div id="name-form">
+    <label for="player-name">Enter your name:</label>
+    <input type="text" id="player-name">
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div id="game-container"></div>
+
+  <div id="result">Matches: 0</div>
+
+  <script>
+    let playerName = '';
+
+    function startGame() {
+      playerName = document.getElementById('player-name').value;
+      if (playerName.trim() === '') {
+        alert('Please enter your name: ');
+      } else {
+        document.getElementById('name-form').style.display = 'none';
+        initializeGame();
+      }
+    }
+
+    const cards = [
+      'ALL IZZ WELL', 'ALL IZZ WELL', 'Hatao Yaar Matar Paneer Pe Concentrate Karo', 'Hatao Yaar Matar Paneer Pe Concentrate Karo',
+      'Kaamyaab hone ke liye nahin, Kaabil hone ke liye padho!', 'Kaamyaab hone ke liye nahin, Kaabil hone ke liye padho!', '3 IDIOTS', '3 IDIOTS',
+      'Jahanpanah! Tussi great ho', 'Jahanpanah! Tussi great ho', 'Life is a race, If you don’t run fast,you will be like a broken andaa', 'Life is a race, If you don’t run fast,you will be like a broken andaa',
+      'Give me some sunshine!', 'Give me some sunshine!', 'Abba nhi manenge', 'Abba nhi manenge'
+    ];
+
+    let flippedCards = [];
+    let matchedCards = [];
+    let matches = 0;
+
+    function initializeGame() {
+      const gameContainer = document.getElementById('game-container');
+      cards.forEach((card, index) => {
+        const cardElement = document.createElement('div');
+        cardElement.classList.add('card');
+        cardElement.setAttribute('data-index', index);
+        cardElement.addEventListener('click', () => flipCard(index));
+        gameContainer.appendChild(cardElement);
+      });
+      shuffleCards();
+    }
+
+    function shuffleCards() {
+      cards.sort(() => Math.random() - 0.5);
+    }
+
+    function flipCard(index) {
+      if (flippedCards.length < 2 && !flippedCards.includes(index) && !matchedCards.includes(index)) {
+        const cardElement = document.querySelector(`.card[data-index="${index}"]`);
+        cardElement.innerText = cards[index];
+        flippedCards.push(index);
+
+        if (flippedCards.length === 2) {
+          setTimeout(checkMatch, 1000);
+        }
+      }
+    }
+
+    function checkMatch() {
+      const [index1, index2] = flippedCards;
+      if (cards[index1] === cards[index2]) {
+        matchedCards.push(index1, index2);
+        matches++;
+
+        if (matches === cards.length / 2) {
+          displayResult();
+        } else {
+          document.getElementById('result').innerText = `Matches: ${matches}`;
+        }
+      } else {
+        // Flip the cards back if they don't match
+        flipBack(index1);
+        flipBack(index2);
+      }
+
+      flippedCards = [];
+    }
+
+    function flipBack(index) {
+      const cardElement = document.querySelector(`.card[data-index="${index}"]`);
+      cardElement.innerText = '';
+    }
+
+    function displayResult() {
+      document.getElementById('result').innerText = `${playerName}, ne bana di jodi!`;
+    }
+  </script>
+
+</body>
+</html>
